@@ -1,0 +1,64 @@
+Scenario: ABC Corp wants to implement a trigger
+ that automatically updates the "Total Revenue" field on
+ the related "Account" record whenever a
+ new "Opportunity" record is created or an existing one is updated.
+ The "Total Revenue" field on the "Account" record should be 
+the sum of the "Amount" field of all related "Opportunity" records.
+
+Opportunity - Amount field 
+
+Account - TotalRevenue 30 
+   --- Opp1 10
+   ----Opp2 20
+   
+   
+trigger OpportunityTrigger on Opportunity(after insert,before update){
+    switch on trigger.operationType{
+	    when AFTER_INSERT {
+		    OpportunityTriggerHandler.handleAfterInsert(trigger.new,trigger.newmap);
+		}
+		when BEFORE_UPDATE{
+		    OpportunityTriggerHandler.handleBeforeUpdate(trigger.new,trigger.newmap);
+
+		}
+	}
+
+}    
+
+interface ITrigger {
+    public static void handleAfterInsert(List<Sobject>,Map<Id,Sobject>);
+    public static void handleBeforeUpdate(List<Sobject>,Map<Id,Sobject>);
+} 
+
+public class OpportunityTriggerHandler implements ITrigger{
+    public static void handleAfterInsert(List<Opportunity> listOfOpportunities,
+	                                      Map<Id,Opportunity> mapOfNewOpportunities){
+        OpportunityService.calculateSumOfOpportunities(listOfOpportunities);	
+	}
+	public static void handleBeforeUpdate(List<Opportunity> listOfOpportunities,
+	                                      Map<Id,Opportunity> mapOfNewOpportunities){
+        OpportunityService.calculateSumOfOpportunities(listOfOpportunities);	
+	}
+}
+
+public class OpportunityService{
+    public static void calculateSumOfOpportunities(List<Opportunity> listOfOpportunities,
+        Map<Id,Opportunity> mapOfNewOpportunities){
+        Set<Id> accountIds = new Set<Id>(); 
+	    for(Opportunity opp : listOfOpportunities){
+           accountIds.add(opp.AccountId);   
+        }
+        List<Account> accountList = [SELECT ID,(SELECT Id,Amount FROM Opportunities),
+	                                   TotalRevenue__c FROM 	Account
+                                       WHERE ID in: accountIds];
+       	for(Account acc : accountList){
+            Decimal totalRevenue = 0;
+			for(Opportunity opp : acc.Opportunities){
+			    totalRevenue+= opp.Amount;
+			}
+			acc.TotalRevenue__c = totalRevenue;
+		}
+        update accountList; 		
+   }
+
+}

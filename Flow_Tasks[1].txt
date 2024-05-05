@@ -1,0 +1,54 @@
+Task-1
+
+Create a Screen Flow that inserts Library Record from Account Record Detail Page and
+
+ also Create a Task for Account from Apex and show Task ID in Last Screen 
+
+----------
+Task-2
+
+Create a Schedule - Triggered Flow to Send Birthday Mail to Contact with Email Template (using Merge Fields)
+
+-------------
+Task-3
+
+Create a Autolaunched Flow to to Create Task(sub Flow) with whoID if Contact record(Flow1) is Created || Create Task(sub Flow) with whatID if Account(flow2) record is Created with 
+Custom Error , Different other Actions
+
+Task-4
+
+* Advantages & DisAdvantages of Flows(Overall)
+
+* Advantages & DisAdvantages of Each Flow
+
+
+
+
+
+
+
+
+
+
+Task-1: Create a Screen Flow that inserts Library(custom object) Record from Account Record Detail Page 
+and also Create a Task for Account from Apex and show Task ID in Last Screen 
+
+----------
+Task-2: Create a Schedule - Triggered Flow to Send Birthday Mail to Contact with Email Template (using Merge Fields)
+
+
+
+----------
+
+
+Task-3: a) Call a sub flow to Create Task(sub Flow) with whatId from Account record Trigger flow (Flow1) &&
+        b) Call the same sub flow to Create Task(sub Flow) with whoID from Contact record Trigger flow 
+                c) Include custom Error + include your own Actions too in the same record trigger flows like (field update, Email alerts etc).
+----------
+Task-4: a)  Advantages & DisAdvantages of Flows(Overall) && Advantages & DisAdvantages of Each Type of Flow
+                b)  Formula fields functions + validation rules + recordtypes + dynamic forms(lightning record page) + Order of execution
+
+                c)  Overall viva on object model + security model + Automations
+
+
+

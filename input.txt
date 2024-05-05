@@ -1,0 +1,37 @@
+<lightning-input data-id="foneCandidato" type="text" class="slds-m-bottom_small" label="Telefone"
+          onchange={handleMaskTelefone}
+          pattern="(^\([1-9]\d\)\s9?\d{5}-\d{4}$)"
+          >
+        </lightning-input>  what is pattern in lightning input
+ChatGPT
+
+In the provided Lightning Web Component (LWC) code, the pattern attribute in the <lightning-input> element is used to specify a regular expression pattern that the input value must match. This pattern is used for input validation.
+
+Let's break down the pattern attribute in your code:
+
+html
+
+pattern="(^\([1-9]\d\)\s9?\d{5}-\d{4}$)"
+
+Here's what each part of the pattern means:
+
+    ^: Asserts the start of the string.
+    \(: Matches an opening parenthesis "(".
+    [1-9]: Matches a single digit from 1 to 9.
+    \d: Matches any digit.
+    \): Matches a closing parenthesis ")".
+    \s: Matches any whitespace character (including spaces, tabs, and line breaks).
+    9?: Matches an optional "9". The "?" means that the preceding character (in this case, "9") is optional.
+    \d{5}: Matches exactly 5 digits.
+    -: Matches a hyphen.
+    \d{4}: Matches exactly 4 digits.
+    $: Asserts the end of the string.
+
+So, the overall pattern enforces a specific format for a phone number:
+
+    The phone number must start with an opening parenthesis, followed by a digit from 1 to 9.
+    It can have an optional "9" after the opening parenthesis.
+    It must have exactly 5 digits, followed by a hyphen, and then exactly 4 more digits.
+    The entire string must match this pattern from start to end.
+
+If the user enters a value that does not conform to this pattern, the lightning-input element would be considered invalid, and the browser would prevent form submission until a valid value is provided. The onchange attribute is set to a function called handleMaskTelefone, indicating that this function will be invoked when the input value changes, possibly to handle masking or other logic related to the phone number input.

@@ -1,0 +1,73 @@
+Scenario: MNO Corp wants to implement a trigger that automatically 
+creates a follow-up task whenever an "Opportunity" record is 
+marked as "Closed Won." The task should be assigned to the 
+Opportunity owner and have a due date set based on 
+the "Close Date" of the Opportunity. 
+How would you implement this trigger to ensure it handles
+ bulk operations effectively?
+
+
+Trigger Point is on Update,Insert 
+   opp  StageName changed to ClosedWon
+    ---> create   Task on Opportunity
+	     WhatId --> Opp id 
+
+
+trigger OpportunityTrigger on Opportunity(after insert,before update){
+    switch on trigger.operationType{
+	    when AFTER_INSERT {
+		    OpportunityTriggerHandler.handleAfterInsert(trigger.new,trigger.newmap);
+		}
+		when BEFORE_UPDATE{
+		    OpportunityTriggerHandler.handleBeforeUpdate(trigger.newmap,trigger.oldmap);
+
+		}
+	}
+
+}    
+
+interface ITrigger {
+    public static void handleAfterInsert(List<Sobject>,Map<Id,Sobject>);
+    public static void handleBeforeUpdate(List<Sobject>,Map<Id,Sobject>);
+} 
+
+public class OpportunityTriggerHandler implements ITrigger{
+    public static void handleAfterInsert(List<Opportunity> listOfOpportunities,
+	                                      Map<Id,Opportunity> mapOfNewOpportunities){
+        OpportunityService.createTaskBasedOnOpportunity(mapOfNewOpportunities,null);	
+	}
+	public static void handleBeforeUpdate(Map<Id,Opportunity> mapOfNewOpportunities,
+	                                      Map<Id,Opportunity> mapOfOldOpportunities){
+        OpportunityService.createTaskBasedOnOpportunity(mapOfNewOpportunities,
+		                                              mapOfOldOpportunities);	
+	}
+}
+
+public class OpportunityService{
+    public static void createTaskBasedOnOpportunity(Map<Id,Opportunity> mapOfNewOpportunities
+        Map<Id,Opportunity> mapOfOldOpportunities){
+        List<Opportunity> listOfClosedWonOpportunities = new List<Opportunity>(); 
+	    List<Task> taskList = new List<Task>();   
+		for(Opportunity opp : mapOfNewOpportunities.values()){
+            if(opp.StageName == 'Closed Won'  && (mapOfOldOpportunities == null  
+			    || (mapOfOldOpportunities.get(opp.StageName)!= opp.StageName))){
+			   listOfClosedWonOpportunities.add(opp);
+			}
+        }
+		for(Opportunity opp: listOfClosedWonOpportunities){
+		     Task followuptask = new Task();
+			 followuptask.Subject = 'Followup Task on Opportunity' + opp.Name;
+			 followuptask.DueDate = opp.CloseDate;
+			 followuptask.WhatId = opp.Id;
+			 followuptask.Status = 'New';
+			 followuptask.WhoId = opp.OwnerId;
+			 taskList.add(followuptask);
+		
+		}
+		if(!taskList.isEmpty()){
+			insert taskList;
+		}
+		
+   }
+
+}
